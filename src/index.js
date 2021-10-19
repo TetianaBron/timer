@@ -50,6 +50,8 @@ const timerRefs = {
   clockface: document.querySelector('.js-clockface'),
 };
 
+const RUN = 'Запустить';
+const PROCCED = 'Продолжить';
 const STOP = 'Остановить';
 const RESET = 'Сбросить';
 
@@ -67,6 +69,7 @@ class Timer {
 
   init() {
     this.getTimeComponentsOnTick(this.value);
+    timerRefs.startBtn.textContent = RUN;
     timerRefs.stopBtn.disabled = true;
   }
   start() {
@@ -89,6 +92,7 @@ class Timer {
       return;
     }
     clearInterval(this.intervalId);
+    timerRefs.startBtn.textContent = PROCCED;
     timerRefs.startBtn.disabled = false;
     this.isRunning = false;
   }
