@@ -50,38 +50,61 @@ const timerRefs = {
   clockface: document.querySelector('.js-clockface'),
 };
 
+const STOP = 'Остановить';
+const RESET = 'Сбросить';
+
 class Timer {
   constructor({ onTick }) {
+    this.isRunning = false;
+    this.value = 0;
+    this.startTime = 0;
+
     this.intervalId = null;
-    this.isActive = false;
     this.onTick = onTick;
 
     this.init();
   }
 
   init() {
-    this.getTimeComponentsOnTick(0);
+    this.getTimeComponentsOnTick(this.value);
+    timerRefs.stopBtn.disabled = true;
   }
   start() {
-    if (this.isActive) {
+    if (this.isRunning) {
       return;
     }
-    const startTime = Date.now();
-    this.isActive = true;
+    this.isRunning = true;
+    timerRefs.stopBtn.textContent = STOP;
+    //'- this.value' - for continue after stop
+    this.startTime = Date.now() - this.value;
     this.intervalId = setInterval(() => {
-      const currentTime = Date.now();
-      const deltaTime = currentTime - startTime;
-      this.getTimeComponentsOnTick(deltaTime);
+      this.value = Date.now() - this.startTime;
+      this.getTimeComponentsOnTick(this.value);
     }, 1000);
+    timerRefs.startBtn.disabled = true;
+    timerRefs.stopBtn.disabled = false;
   }
-
   stop() {
-    if (!this.isActive) {
+    if (!this.isRunning) {
       return;
     }
     clearInterval(this.intervalId);
-    this.getTimeComponentsOnTick(0);
-    this.isActive = false;
+    timerRefs.startBtn.disabled = false;
+    this.isRunning = false;
+  }
+
+  clear() {
+    this.value = 0;
+    this.init();
+  }
+  stopOrClear() {
+    if (timerRefs.stopBtn.textContent === STOP) {
+      this.stop();
+      timerRefs.stopBtn.textContent = RESET;
+    } else {
+      this.clear();
+      timerRefs.stopBtn.textContent = STOP;
+    }
   }
   getTimeComponents(time) {
     const hours = this.pad(
@@ -106,7 +129,7 @@ const timer = new Timer({
 });
 
 timerRefs.startBtn.addEventListener('click', timer.start.bind(timer));
-timerRefs.stopBtn.addEventListener('click', timer.stop.bind(timer));
+timerRefs.stopBtn.addEventListener('click', timer.stopOrClear.bind(timer));
 
 function updateClockface({ hours, mins, secs }) {
   timerRefs.clockface.textContent = `${hours}:${mins}:${secs}`;
