@@ -2,8 +2,8 @@
 App with start/stop, continue/reset buttons
 
 ## Technologies are used: 
-* html5; 
-* scss;
+* HTML5; 
+* SASS;
 * bootstrap;
 * Parcel;
 * JS
